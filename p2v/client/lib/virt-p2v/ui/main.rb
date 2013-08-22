@@ -14,8 +14,37 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'gtk2'
-require 'virt-p2v/gtk-queue'
+#require 'gtk2'
+#require 'virt-p2v/gtk-queue'
+
+module VirtP2V
+module UI
+  class NeverMind
+    def method_missing(m, *args, &block)
+      puts "Never mind call '#{m} #{args}'. ON #{self.inspect}"
+      self
+    end
+
+    def self.method_missing(m, *args, &block)
+      puts "Never mind class call '#{m} #{args}'. ON #{self.inspect}"
+      self
+    end
+
+    def initialize
+      puts "Hi, I'm #{self.inspect}"
+    end
+  end
+end
+end
+
+module Gtk
+  Builder = VirtP2V::UI::NeverMind
+  STATE_NORMAL = 0
+end
+
+module Gdk
+  Color = VirtP2V::UI::NeverMind
+end
 
 module VirtP2V
 module UI
@@ -109,6 +138,49 @@ class Main
         # Set a default first page
         self.active_page = 'network_win'
     end
+end
+
+
+class NewMain < Main
+  def parse_cmdline(filename = nil)
+    filename ||= '/proc/cmdline'
+    cmdline = open(filename) do |f|
+      f.read.strip.split
+    end
+    params = {}
+    cmdline.each do |c|
+      /p2v_([a-zA-Z0-9_]*)=([a-zA-Z0-9_]*)/ =~ c
+      params.merge! $1 => $2 if $1
+    end
+    params
+  end
+
+  def get_object(name)
+    # this is the entry point for returning our mocked
+    # versions of gtk2 objects, very similar to what we'd
+    # need to write tests
+    puts "GET_OBJ #{name}"
+    if name == "network_win" then
+      n = NeverMind.new
+      n.define_method : do
+
+      end
+    else
+      NeverMind.new
+    end
+  end
+
+  def main_loop
+    # and this is the program flow entry point,
+    # basic idea is to 'proceed with actions
+    # as would user do' based on parameters passed
+    # through kernel command line
+  end
+
+  def initialize dry=nil
+    super() unless dry
+    @builder = NeverMind.new
+  end
 end
 
 end # UI
