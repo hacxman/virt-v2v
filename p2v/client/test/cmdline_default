@@ -1,0 +1,1 @@
+BOOT_IMAGE=/vmlinuz-3.9.9-301.fc19.x86_64 root=/dev/mapper/vg_jelly-lv_root ro rd.lvm.lv=vg_jelly/lv_root rd.md=0 rd.dm=0 SYSFONT=True KEYTABLE=us rd.lvm.lv=vg_jelly/lv_swap rd.luks.uuid=luks-2a7c6825-76a4-4b85-9eca-ec35bd682553 LANG=en_US.UTF-8 rhgb quiet
