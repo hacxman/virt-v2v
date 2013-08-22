@@ -1,0 +1,49 @@
+UI duck screen:
+  .get_object/1 :: string -> gtk obj
+  .register_handler/2 :: event string -> method/1 volanie -> ()
+
+network_device_list_view.selection Duck screen:
+  .mode :: setter na selection type
+  .set_select_function &block
+
+device_list:
+  .append() :: () -> Hash
+
+
+gtk_obj:
+  .sensitive :: setter na bool
+  .selection
+
+SIGNALS:
+main_window: destroy:gtk_main_quit
+
+network_win (gtkwindow):
+  ip_auto (GtkCheckButton): toggled:ip_auto_toggled
+  ip_gateway (GtkEntry): changed:ip_gateway_changed
+  ip_dns (GtkEntry): changed:ip_dns_changed
+  ip_address (GtkEntry): changed:ip_address_changed
+  ip_prefix (GtkEntry): changed:ip_prefix_changed
+  network_button (GtkButton): clicked:network_button_clicked
+
+server_win (gtkwindow):
+  server_hostname (GtkEntry): changed:server_hostname_changed
+  server_password (gtkentry): changed:server_password_changed
+  server_username (GtkEntry): changed:server_username_changed
+  connect_button (GtkButton): clicked:connect_button_clicked
+
+success_win (GtkWindow):
+  poweroff_button (GtkButton): clicked:poweroff_button_clicked
+
+conversion_win:
+  convert_profile (gtkcomboxbox): changed:convert_profile_changed
+  convert_memory (gtkentry): changed:convert_memory_changed
+  convert_name (gtkentry): changed:convert_name_changed
+  convert_cpus (gtkentry): changed:convert_cpus_changed
+  convert_fixed_select (gtkcellrederertoggle): toggled:convert_fixed_select_toggled
+  convert_removable_select (GtkCellRendererToggle): toggled:convert_removable_select_toggled
+  convert_network_select (GtkCellRendererToggle): toggled:convert_network_select_toggled
+  convert_button (GtkButton): clicked:convert_button_clicked
+
+  convert_fixed_list (GtkListStore): row-changed:convert_fixed_list_row_changed
+  convert_network_list (GtkListStore): row-changed:convert_network_list_row_changed
+  convert_removable_list (GtkListStore): row-changed:convert_removable_list_row_changed
