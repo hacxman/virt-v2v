@@ -21,17 +21,18 @@ module VirtP2V
 module UI
   class NeverMind
     def method_missing(m, *args, &block)
-      puts "Never mind call '#{m} #{args}'. ON #{self.inspect}"
+      puts "Never mind call '#{m} #{args}'. ON #{@name || self.inspect}"
       self
     end
 
     def self.method_missing(m, *args, &block)
-      puts "Never mind class call '#{m} #{args}'. ON #{self.inspect}"
+      puts "Never mind class call '#{m} #{args}'. ON #{@name || self.inspect}"
       self
     end
 
-    def initialize
-      puts "Hi, I'm #{self.inspect}"
+    def initialize(name=nil, *args)
+      @name = name
+      puts "Hi, I'm #{@name || self.inspect}"
     end
   end
 end
@@ -40,10 +41,16 @@ end
 module Gtk
   Builder = VirtP2V::UI::NeverMind
   STATE_NORMAL = 0
+  SELECTION_SINGLE = 1
+  TreeRowReference = VirtP2V::UI::NeverMind
+
 end
 
 module Gdk
   Color = VirtP2V::UI::NeverMind
+  Cursor = VirtP2V::UI::NeverMind
+  Cursor::Type = VirtP2V::UI::NeverMind
+  Cursor::Type::X_CURSOR = VirtP2V::UI::NeverMind
 end
 
 module VirtP2V
@@ -161,12 +168,12 @@ class NewMain < Main
     # need to write tests
     puts "GET_OBJ #{name}"
     if name == "network_win" then
-      n = NeverMind.new
-      n.define_method : do
-
-      end
+      n = NeverMind.new name
+#      n.define_method : do
+#
+#      end
     else
-      NeverMind.new
+      NeverMind.new name
     end
   end
 
@@ -175,6 +182,12 @@ class NewMain < Main
     # basic idea is to 'proceed with actions
     # as would user do' based on parameters passed
     # through kernel command line
+    puts "this is the main loop"
+  end
+
+  def register_handler(signal, handler)
+    super(signal, handler)
+    puts "#{handler} for #{signal} action registered"
   end
 
   def initialize dry=nil
