@@ -138,10 +138,11 @@ module VirtP2V::UI::Convert
 
         @state = nil
         set_state(UI_STATE_INVALID)
-        update_values
 
         @ui = ui
         @converter = converter
+
+        update_values
     end
 
     def self.event(event, status)
