@@ -42,4 +42,9 @@ class TestWithConverterNewMainIntegration < TestNewMainIntegration
   def make_converter
     VirtP2V::Converter.new
   end
+
+  def test_blockdevice_lookup
+    devs = VirtP2V::FixedBlockDevice.all_devices
+    refute_empty devs
+  end
 end
