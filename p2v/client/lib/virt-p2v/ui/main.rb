@@ -167,14 +167,26 @@ class NewMain < Main
     # versions of gtk2 objects, very similar to what we'd
     # need to write tests
     puts "GET_OBJ #{name}"
-    if name == "network_win" then
+    @gui_objects ||= {}
+    @gui_objects[name] ||= if name == "network_device_list" then
       n = NeverMind.new name
-#      n.define_method : do
-#
-#      end
+      n.class.send(:define_method, :append) do |*args|
+        @items ||= []
+        @items << []
+        self
+      end
+      n.class.send(:define_method, :"[]=") do |idx, item|
+        p "called []= on #{name} with #{args}"
+        @items.last[idx] = item
+        p @items
+        self
+      end
+      n
     else
       NeverMind.new name
     end
+
+    @gui_objects[name]
   end
 
   def main_loop
