@@ -21,12 +21,19 @@ module VirtP2V
 module UI
   class NeverMind
     def method_missing(m, *args, &block)
-      puts "Never mind call '#{m} #{args}'. ON #{@name || self.inspect}"
+      _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
+        self.__id__.to_s : _a}
+      puts "Never mind call '#{m} #{_args}'. ON #{@name ||
+        ("NeverMind:"+self.__id__.to_s)}"
       self
     end
 
     def self.method_missing(m, *args, &block)
-      puts "Never mind class call '#{m} #{args}'. ON #{@name || self.inspect}"
+      _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
+        self.__id__.to_s : _a}
+      #puts "Never mind class call '#{m} #{_args}'. ON #{@name || self.inspect}"
+      puts "Never mind call '#{m} #{_args}'. ON #{@name ||
+        ("NeverMind:"+self.__id__.to_s)}"
       self
     end
 
@@ -95,6 +102,7 @@ class Main
         raise "Attempt to activate non-existent page #{name}" \
             unless @pages.has_key?(name)
 
+        p "trying to activate page #{name}"
         page = @pages[name]
 
         @page_vbox = self.get_object('page_vbox') unless defined? @page_vbox
@@ -202,8 +210,12 @@ class NewMain < Main
       end
       n
     elsif ["server_hostname", "server_username", "server_password",
-            "convert_name", "convert_cpus", "convert_memory"].any?{|n| n==name}
+            "convert_name", "convert_cpus", "convert_memory",
+            "ip_manual", "ip_address", "ip_prefix", "ip_gateway",
+            "ip_dns", "server_hostname", "server_username",
+            "server_password"].any?{|m| m==name}
       # N.B. some of these are set by user
+      p "GOTCHA, YOU'D LOVE TO GET #{name}"
       n = NeverMind.new self, name
       n.class.send(:define_method, :text) do
 #        p "called text on #{name}"
@@ -219,6 +231,7 @@ class NewMain < Main
       NeverMind.new self, name
     end
 
+    p "I'LL RETURN YOU #{@gui_objects[name].class}:#{@gui_objects[name].__id__} for #{name}"
     @gui_objects[name]
   end
 
@@ -228,7 +241,36 @@ class NewMain < Main
     # as would user do' based on parameters passed
     # through kernel command line
     puts "this is the main loop"
+
+    get_object("ip_manual").text=true
+    get_object("ip_address").text="10.0.0.1"
+    get_object("ip_prefix").text="24"
+    get_object("ip_gateway").text="10.0.0.254"
+    get_object("ip_dns").text="10.0.0.253"
+    p "SO, THE IP IS #{get_object("ip_address").text}"
+    @signal_handlers["ip_address_changed"].call
+    @signal_handlers["ip_prefix_changed"].call
+    @signal_handlers["ip_gateway_changed"].call
+    @signal_handlers["ip_dns_changed"].call
+    # aaaand CLICK!
     @signal_handlers["network_button_clicked"].call
+
+    # TODO: this activation in NOT neccessary
+    # since it's done automatically in network module
+    # but well, not in "testing"
+    self.active_page='server_win'
+    get_object("server_hostname").text='localhost'
+    get_object("server_username").text='tak'
+    get_object("server_password").text='urcite'
+    @signal_handlers["server_hostname_changed"].call
+    @signal_handlers["server_username_changed"].call
+    @signal_handlers["server_password_changed"].call
+    @signal_handlers["connect_button_clicked"].call
+
+    # TODO: again, stupidly switch page and don't care about truth!
+    self.active_page='conversion_win'
+    p VirtP2V::UI::Connect.instance_variable_get(:@converter).connection.class
+
   end
 
   def register_handler(signal, handler)
