@@ -248,28 +248,47 @@ class NewMain < Main
     get_object("ip_gateway").text="10.0.0.254"
     get_object("ip_dns").text="10.0.0.253"
     p "SO, THE IP IS #{get_object("ip_address").text}"
+    @signal_handlers["ip_auto_toggled"].call
     @signal_handlers["ip_address_changed"].call
     @signal_handlers["ip_prefix_changed"].call
     @signal_handlers["ip_gateway_changed"].call
     @signal_handlers["ip_dns_changed"].call
+    # send a synthetic event, UI would think that we made a selection
+    VirtP2V::UI::Network.event(VirtP2V::UI::Network::EV_SELECTION, true)
     # aaaand CLICK!
     @signal_handlers["network_button_clicked"].call
 
-    # TODO: this activation in NOT neccessary
-    # since it's done automatically in network module
-    # but well, not in "testing"
-    self.active_page='server_win'
-    get_object("server_hostname").text='localhost'
-    get_object("server_username").text='tak'
-    get_object("server_password").text='urcite'
-    @signal_handlers["server_hostname_changed"].call
-    @signal_handlers["server_username_changed"].call
-    @signal_handlers["server_password_changed"].call
-    @signal_handlers["connect_button_clicked"].call
+    # register ourselves as listener on activated connection
+    # as VirtP2V::UI:Netowork does
+    VirtP2V::NetworkDevice.add_listener( lambda { |dev|
+      p dev
+      if dev.connected && dev.activated then
+        p "we should now continue"
+      end
+    })
 
-    # TODO: again, stupidly switch page and don't care about truth!
-    self.active_page='conversion_win'
-    p VirtP2V::UI::Connect.instance_variable_get(:@converter).connection.class
+    # let's try to recieve some more of NMs signals
+    session_bus = DBus::SystemBus.instance
+
+    db_main = DBus::Main.new
+    db_main << session_bus
+    db_main.run
+
+#    # TODO: this activation in NOT neccessary
+#    # since it's done automatically in network module
+#    # but well, not in "testing"
+#    self.active_page='server_win'
+#    get_object("server_hostname").text='localhost'
+#    get_object("server_username").text='tak'
+#    get_object("server_password").text='urcite'
+#    @signal_handlers["server_hostname_changed"].call
+#    @signal_handlers["server_username_changed"].call
+#    @signal_handlers["server_password_changed"].call
+#    @signal_handlers["connect_button_clicked"].call
+#
+#    # TODO: again, stupidly switch page and don't care about truth!
+#    self.active_page='conversion_win'
+#    p VirtP2V::UI::Connect.instance_variable_get(:@converter).connection.class
 
   end
 
