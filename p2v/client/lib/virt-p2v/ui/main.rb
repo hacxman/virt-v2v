@@ -270,6 +270,15 @@ class NewMain < Main
       p dev
       if dev.connected && dev.activated then
         p "we should now continue"
+        get_object("server_hostname").text='convertserver'
+        get_object("server_username").text='root'
+        get_object("server_password").text='roflkopter'
+        p "let's notify server window that we entered data"
+        @signal_handlers["server_hostname_changed"].call
+        @signal_handlers["server_username_changed"].call
+        @signal_handlers["server_password_changed"].call
+        p "and do a fake click"
+        @signal_handlers["connect_button_clicked"].call
       end
     })
 
