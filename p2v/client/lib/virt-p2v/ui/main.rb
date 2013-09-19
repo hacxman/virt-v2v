@@ -283,11 +283,22 @@ class NewMain < Main
     })
 
     # let's try to recieve some more of NMs signals
-    session_bus = DBus::SystemBus.instance
+    Thread.new {
+      session_bus = DBus::SystemBus.instance
 
-    db_main = DBus::Main.new
-    db_main << session_bus
-    db_main.run
+      db_main = DBus::Main.new
+      db_main << session_bus
+      db_main.run
+    }
+
+    Thread.new {
+      (0..200).each {
+        sleep 0.1
+      }
+      exit(0)
+    }
+
+    Gtk.main_with_queue 100
 
 #    # TODO: this activation in NOT neccessary
 #    # since it's done automatically in network module
