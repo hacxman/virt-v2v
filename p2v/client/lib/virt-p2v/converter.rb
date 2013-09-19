@@ -113,7 +113,7 @@ class Converter
         end
 
         # Get the total number of cpu threads from hwloc-info
-        hwloc = Document.new `hwloc-info --of xml`
+        hwloc = Document.new `hwloc-ls --of xml`
         @cpus = XPath.match(hwloc, "//object[@type='PU']").length
 
         # Get cpu architecture and features from the first flags entry in
