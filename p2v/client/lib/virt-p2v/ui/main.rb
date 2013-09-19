@@ -52,6 +52,12 @@ module Gtk
   SELECTION_SINGLE = 1
   TreeRowReference = VirtP2V::UI::NeverMind
 
+  def Gtk.timeout_add(timeout, &block)
+    while true
+      sleep(timeout/1000.0)
+      block.call
+    end
+  end
 end
 
 module Gdk
