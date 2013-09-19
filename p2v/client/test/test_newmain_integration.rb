@@ -47,4 +47,8 @@ class TestWithConverterNewMainIntegration < TestNewMainIntegration
     devs = VirtP2V::FixedBlockDevice.all_devices
     refute_empty devs
   end
+
+  def test_launch_with_converter
+    test_toothlees_launch
+  end
 end
