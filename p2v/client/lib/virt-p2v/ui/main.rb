@@ -249,10 +249,10 @@ class NewMain < Main
     puts "this is the main loop"
 
     get_object("ip_manual").text=true
-    get_object("ip_address").text="10.0.0.1"
+    get_object("ip_address").text="192.168.122.110"
     get_object("ip_prefix").text="24"
-    get_object("ip_gateway").text="10.0.0.254"
-    get_object("ip_dns").text="10.0.0.253"
+    get_object("ip_gateway").text="192.168.122.1"
+    get_object("ip_dns").text="192.168.122.1"
     p "SO, THE IP IS #{get_object("ip_address").text}"
     @signal_handlers["ip_auto_toggled"].call
     @signal_handlers["ip_address_changed"].call
