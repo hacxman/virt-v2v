@@ -181,7 +181,7 @@ class NewMain < Main
     end
     params = {}
     cmdline.each do |c|
-      /p2v_([a-zA-Z0-9_]*)=([a-zA-Z0-9_]*)/ =~ c
+      /p2v_([a-zA-Z0-9_]*)=([a-zA-Z0-9_\.\,]*)/ =~ c
       params.merge! $1 => $2 if $1
     end
     params
