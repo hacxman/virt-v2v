@@ -341,13 +341,6 @@ class NewMain < Main
       db_main.run
     }
 
-    Thread.new {
-      (0..200).each {
-        sleep 0.1
-      }
-      exit(0)
-    }
-
     Gtk.main_with_queue 100
   end
 
