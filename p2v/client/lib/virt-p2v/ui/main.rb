@@ -193,7 +193,9 @@ class NewMain < Main
     # need to write tests
     puts "GET_OBJ #{name}"
     @gui_objects ||= {}
-    @gui_objects[name] ||= if name == "network_device_list" then
+    @gui_objects[name] ||= if ["network_device_list",
+          "convert_profile_list", "convert_network_list",
+          "convert_fixed_list", "convert_removable_list"].any?{|m| m==name}
       n = NeverMind.new self, name
       n.eigen.send(:define_method, :append) do |*args|
 #        p "append on #{self.name} #{args.inspect}"
