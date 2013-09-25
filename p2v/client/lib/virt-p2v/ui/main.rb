@@ -296,28 +296,31 @@ class NewMain < Main
     @gui_objects[name]
   end
 
+  def cmdline_filename
+    '/proc/cmdline'
+  end
+
   def main_loop
     # and this is the program flow entry point,
     # basic idea is to 'proceed with actions
     # as would user do' based on parameters passed
     # through kernel command line
-    puts "this is the main loop"
 
-    get_object("ip_manual").text=true
-    get_object("ip_address").text="192.168.122.110"
-    get_object("ip_prefix").text="24"
-    get_object("ip_gateway").text="192.168.122.1"
-    get_object("ip_dns").text="192.168.122.1"
-    p "SO, THE IP IS #{get_object("ip_address").text}"
-    @signal_handlers["ip_auto_toggled"].call
-    @signal_handlers["ip_address_changed"].call
-    @signal_handlers["ip_prefix_changed"].call
-    @signal_handlers["ip_gateway_changed"].call
-    @signal_handlers["ip_dns_changed"].call
-    # send a synthetic event, UI would think that we made a selection
-    VirtP2V::UI::Network.event(VirtP2V::UI::Network::EV_SELECTION, true)
-    # aaaand CLICK!
-    @signal_handlers["network_button_clicked"].call
+    params = parse_cmdline(cmdline_filename)
+    unless validate_params(params)
+      if params.has_key?('server_password')
+        params['server_password'] = '*' * params['server_password'].length
+      end
+      puts "Not enough command line parameters or some not entered. Exitting."
+      puts "Params are: #{params.map {|k,v| "p2v_#{k}=#{v}"}.join(' ') }, " +
+           "read from #{cmdline_filename}"
+      puts "Expected params are: #{expected_param_keys.map{|p| "p2v_#{p}"}.
+                                   join(', ')}."
+      exit(1)
+    end
+    @cmd_params = params
+
+    fill_and_click_network
 
     # register ourselves as listener on activated connection
     # as VirtP2V::UI:Netowork does
@@ -325,15 +328,7 @@ class NewMain < Main
       p dev
       if dev.connected && dev.activated then
         p "we should now continue"
-        get_object("server_hostname").text='convertserver'
-        get_object("server_username").text='root'
-        get_object("server_password").text='roflkopter'
-        p "let's notify server window that we entered data"
-        @signal_handlers["server_hostname_changed"].call
-        @signal_handlers["server_username_changed"].call
-        @signal_handlers["server_password_changed"].call
-        p "and do a fake click"
-        @signal_handlers["connect_button_clicked"].call
+        fill_and_click_connect
       end
     })
 
@@ -354,23 +349,83 @@ class NewMain < Main
     }
 
     Gtk.main_with_queue 100
+  end
 
-#    # TODO: this activation in NOT neccessary
-#    # since it's done automatically in network module
-#    # but well, not in "testing"
-#    self.active_page='server_win'
-#    get_object("server_hostname").text='localhost'
-#    get_object("server_username").text='tak'
-#    get_object("server_password").text='urcite'
-#    @signal_handlers["server_hostname_changed"].call
-#    @signal_handlers["server_username_changed"].call
-#    @signal_handlers["server_password_changed"].call
-#    @signal_handlers["connect_button_clicked"].call
-#
-#    # TODO: again, stupidly switch page and don't care about truth!
-#    self.active_page='conversion_win'
-#    p VirtP2V::UI::Connect.instance_variable_get(:@converter).connection.class
+  def expected_param_keys
+      ['ip_manual', 'ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
+            'server_hostname', 'server_username', 'server_password',
+            'convert_name']
+  end
 
+  def is_param_optional?(name)
+      ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns'].include?(name)
+  end
+
+  def validate_params(params)
+    expected_param_keys.each do |k|
+#      p "validate_params: '#{k}', '#{params[k]}'"
+      if (!is_param_optional?(k)) &&
+         ((!params.has_key?(k)) || params[k].nil?)
+        return false
+      end
+    end
+    if params['ip_manual'] == 'true'
+      params['ip_manual'] = true
+    else
+      params['ip_manual'] = false
+    end
+    true
+  end
+
+  def fill_widgets_from_params(names)
+      names.each do |p|
+        get_object(p).text = @cmd_params[p]
+      end
+  end
+
+  def call_actions_by_name(names)
+      names.each do |n|
+        @signal_handlers[n].call
+      end
+  end
+
+  def fill_and_click_network
+      fill_widgets_from_params(["ip_manual", "ip_address", "ip_prefix",
+                                "ip_gateway", "ip_dns"])
+
+      p "SO, THE IP IS #{get_object("ip_address").text}"
+      call_actions_by_name(["ip_auto_toggled", "ip_address_changed",
+       "ip_prefix_changed", "ip_gateway_changed", "ip_dns_changed"])
+
+      # send a synthetic event, UI would think that we made a selection
+      VirtP2V::UI::Network.event(VirtP2V::UI::Network::EV_SELECTION, true)
+      # aaaand CLICK!
+      call_actions_by_name(["network_button_clicked"])
+  end
+
+  def fill_and_click_connect
+      fill_widgets_from_params(["server_hostname", "server_username",
+                                "server_password"])
+
+      call_actions_by_name(["server_hostname_changed",
+          "server_username_changed", "server_password_changed",
+          "connect_button_clicked"])
+  end
+
+  def fill_and_click_convert
+      fill_widgets_from_params(['convert_name'])
+      call_actions_by_name(['convert_name_changed', 'convert_cpus_changed',
+                           'convert_memory_changed', 'convert_profile_changed',
+                           'convert_button_clicked'])
+  end
+
+  def active_page=(name)
+    super(name)
+    if name == 'conversion_win'
+      fill_and_click_convert
+    elsif name == 'success_win'
+      call_actions_by_name(['poweroff_button_clicked'])
+    end
   end
 
   def register_handler(signal, handler)
