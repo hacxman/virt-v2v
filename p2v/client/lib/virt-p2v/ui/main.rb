@@ -37,6 +37,12 @@ module UI
       self
     end
 
+    def eigen
+      class << self
+        self
+      end
+    end
+
     def initialize(main = nil, name=nil, *args)
       @name = name
       @main = main
@@ -185,53 +191,96 @@ class NewMain < Main
     @gui_objects ||= {}
     @gui_objects[name] ||= if name == "network_device_list" then
       n = NeverMind.new self, name
-      n.class.send(:define_method, :append) do |*args|
+      n.eigen.send(:define_method, :append) do |*args|
+#        p "append on #{self.name} #{args.inspect}"
         @items ||= []
         @items << []
         self
       end
-      n.class.send(:define_method, :_items) do
-        #p @items
+      n.eigen.send(:define_method, :_items) do
+        @items ||= []
         @items
       end
-      n.class.send(:define_method, :"[]=") do |idx, item|
-        #p "called []= on #{name} with #{args}"
+      n.eigen.send(:define_method, :_select) do |idx|
+        @idx = idx
+      end
+      n.eigen.send(:define_method, :_selection) do
+        @idx ||= 0
+        @idx
+      end
+      n.eigen.send(:define_method, :"[]=") do |idx, item|
+#        p "called []= on #{name} with #{args}"
         @items.last[idx] = item
         #p @items
         self
       end
+      n.eigen.send(:define_method, :clear) do
+        @items.clear
+      end
+      n.eigen.send(:define_method, :each) do |&block|
+        @items.each do |item|
+          # block accepts three params:
+          # model, path, iter
+          # since we know nothing about model and path
+          # we'll fill only item as iter
+          block.call(nil, nil, item)
+        end
+      end
+      n
+    elsif name == "convert_profile"
+      n = NeverMind.new self, name
+      n.eigen.send(:define_method, :active_iter) do |*args|
+#        p "convert_profile.active_iter"
+        cpl = @main.get_object("convert_profile_list")
+        _items = cpl._items
+        _sel = _items[cpl._selection]
+#        p _sel
+
+      end
       n
     elsif name == "network_device_list_view"
       n = NeverMind.new self, name
-      n.class.send(:define_method, :selection) do
+      n.eigen.send(:define_method, :selection) do
         self
       end
-      n.class.send(:define_method, :selected) do
+      n.eigen.send(:define_method, :selected) do
         # TODO: this needs a proper selection
         # now it's only for a testing purpouse
         # but later we need to reflect reality
         # and not blindly return first device
         nejm = @main.get_object("network_device_list")._items.first
-        p nejm
+#        p nejm
+      end
+      n
+    elsif name == 'connect_error'
+      n = NeverMind.new self, name
+      n.eigen.send(:define_method, :text) do
+        p "called text on #{@name}"
+        @text || ""
+      end
+      n.eigen.send(:define_method, :"text=") do |str|
+        @text = str
+#        p "called text= '#{str}' on #{@name}"
+        puts "Error connecting: '#{str}'"
+        puts "Giving up."
+        exit(3)
       end
       n
     elsif ["server_hostname", "server_username", "server_password",
             "convert_name", "convert_cpus", "convert_memory",
             "ip_manual", "ip_address", "ip_prefix", "ip_gateway",
             "ip_dns", "server_hostname", "server_username",
-            "server_password"].any?{|m| m==name}
+            "server_password"].any?{|_m| _m==name}
       # N.B. some of these are set by user
-      p "GOTCHA, YOU'D LOVE TO GET #{name}"
       n = NeverMind.new self, name
-      n.class.send(:define_method, :text) do
-#        p "called text on #{name}"
+      n.eigen.send(:define_method, :text) do
+#        p "called text on #{@name}"
         @text || ""
       end
-      n.class.send(:define_method, :"text=") do |str|
+      n.eigen.send(:define_method, :"text=") do |str|
         @text = str
-        p "called text= #{str} on #{name}"
+#        p "called text= #{str} on #{@name}"
       end
-#      p n
       n
     else
       NeverMind.new self, name
