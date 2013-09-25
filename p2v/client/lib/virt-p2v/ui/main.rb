@@ -64,6 +64,10 @@ module Gtk
       block.call
     end
   end
+
+  def Gtk.main_quit
+    exit(0)
+  end
 end
 
 module Gdk
