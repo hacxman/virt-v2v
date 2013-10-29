@@ -28,7 +28,7 @@ LOG = '/tmp/virt-p2v.log'
 # Touching this file lets the X wrapper know we ran
 FileUtils.touch('/tmp/virt-p2v-launcher')
 
-def choose
+def choose log
     option = nil
 
     window = Gtk::Window.new
@@ -67,7 +67,13 @@ virt-p2v has shutdown unexpectedly. You may:
 * Power the machine off
 MSG
 
+    swin = Gtk::ScrolledWindow.new()
+    txt = Gtk::TextView.new()
+    txt.buffer.text = log
+
     vbox.border_width = 10
+    swin.add_with_viewport(txt)
+    vbox.add(swin)
     vbox.add(l)
     vbox.add(hbox)
     window.add(vbox)
@@ -83,7 +89,9 @@ loop {
     status = $?
     break if status.success?
 
-    o = choose
+    open(LOG) do |log|
+      o = choose log.read
+    end
     break if o == POWER_OFF
     next if o == TRY_AGAIN
     system('/usr/bin/openvt', '-sw', '--', '/bin/sh', '-c', <<DEBUG)
