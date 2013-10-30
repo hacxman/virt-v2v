@@ -383,6 +383,13 @@ class NewMain < Main
       end
   end
 
+  def show_widgets_from_params(names)
+      # a little debug helper
+      names.each do |p|
+        puts "#{p} is '#{get_object(p).text}'"
+      end
+  end
+
   def call_actions_by_name(names)
       names.each do |n|
         @signal_handlers[n].call
