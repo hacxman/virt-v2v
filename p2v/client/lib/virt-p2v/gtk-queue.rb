@@ -20,7 +20,7 @@
 # The above page is distributed under the terms of the GNU FDL, although I
 # consider this code to be too trivial to be copyrightable
 
-require 'gtk2'
+require 'virt-p2v/ui/gtk'
 require 'thread'
 
 module Gtk

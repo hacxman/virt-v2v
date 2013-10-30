@@ -14,7 +14,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'gtk2'
+require 'virt-p2v/ui/gtk'
 
 require 'virt-p2v/blockdevice'
 require 'virt-p2v/netdevice'
