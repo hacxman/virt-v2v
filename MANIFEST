@@ -47,6 +47,7 @@ p2v/client/lib/virt-p2v/ui/convert.rb
 p2v/client/lib/virt-p2v/ui/main.rb
 p2v/client/lib/virt-p2v/ui/network.rb
 p2v/client/lib/virt-p2v/ui/p2v.ui
+p2v/client/lib/virt-p2v/ui/gtk.rb
 p2v/client/lib/virt-p2v/ui/success.rb
 p2v/client/Manifest
 p2v/client/Rakefile
