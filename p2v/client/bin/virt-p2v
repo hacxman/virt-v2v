@@ -16,6 +16,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Let's check if we should run headless
+NOGUI = open('/proc/cmdline') do |f|
+  f.read =~ /p2v_nogui/
+end || ARGV.include?('-nogui') ? true : false
+
 require 'virt-p2v/ui/main'
 require 'virt-p2v/ui/network'
 require 'virt-p2v/ui/connect'
@@ -34,8 +39,12 @@ end
 
 converter = VirtP2V::Converter.new
 
-# Initialise the wizard UI
-ui = VirtP2V::UI::Main.new
+ui = if NOGUI
+  VirtP2V::UI::NewMain.new
+else
+  # Initialise the wizard UI
+  VirtP2V::UI::Main.new
+end
 
 # Initialize wizard pages
 VirtP2V::UI::Network.init(ui)
