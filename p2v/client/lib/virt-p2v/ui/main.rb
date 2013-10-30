@@ -291,6 +291,9 @@ class NewMain < Main
         @text = str
 #        p "called text= #{str} on #{@name}"
       end
+      n.eigen.send(:define_method, :"secondary_icon_tooltip_text=") do |str|
+        puts "Error in '#{@name}': '#{str}'"
+      end
       n
     else
       NeverMind.new self, name
