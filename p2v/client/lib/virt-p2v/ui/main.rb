@@ -400,9 +400,13 @@ class NewMain < Main
       fill_widgets_from_params(["ip_manual", "ip_address", "ip_prefix",
                                 "ip_gateway", "ip_dns"])
 
-      p "SO, THE IP IS #{get_object("ip_address").text}"
-      call_actions_by_name(["ip_auto_toggled", "ip_address_changed",
-       "ip_prefix_changed", "ip_gateway_changed", "ip_dns_changed"])
+      if get_object("ip_manual").text == true ||
+          get_object("ip_manual").text == "true"
+        call_actions_by_name(["ip_auto_toggled"])
+      else
+        call_actions_by_name(["ip_address_changed",
+         "ip_prefix_changed", "ip_gateway_changed", "ip_dns_changed"])
+      end
 
       # send a synthetic event, UI would think that we made a selection
       VirtP2V::UI::Network.event(VirtP2V::UI::Network::EV_SELECTION, true)
