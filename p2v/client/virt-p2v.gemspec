@@ -53,6 +53,7 @@ GEMSPEC = Gem::Specification.new do |s|
         "lib/virt-p2v/ui/network.rb",
         "lib/virt-p2v/ui/p2v.ui",
         "lib/virt-p2v/ui/success.rb",
+        "lib/virt-p2v/ui/gtk.rb",
         "virt-p2v.gemspec",
         "Manifest"
     ]
@@ -85,7 +86,8 @@ GEMSPEC = Gem::Specification.new do |s|
         "lib/virt-p2v/ui/main.rb",
         "lib/virt-p2v/ui/network.rb",
         "lib/virt-p2v/ui/p2v.ui",
-        "lib/virt-p2v/ui/success.rb"
+        "lib/virt-p2v/ui/success.rb",
+        "lib/virt-p2v/ui/gtk.rb"
     ]
     s.rdoc_options = [
         "--line-numbers",
