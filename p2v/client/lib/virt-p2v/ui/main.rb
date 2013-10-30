@@ -265,15 +265,15 @@ class NewMain < Main
     elsif name == 'connect_error'
       n = NeverMind.new self, name
       n.eigen.send(:define_method, :text) do
-        p "called text on #{@name}"
         @text || ""
       end
       n.eigen.send(:define_method, :"text=") do |str|
         @text = str
-#        p "called text= '#{str}' on #{@name}"
-        puts "Error connecting: '#{str}'"
-        puts "Giving up."
-        exit(3)
+        unless str == ''
+          puts "Error connecting: '#{str}'"
+          puts "Giving up."
+          exit(3)
+        end
       end
       n
     elsif ["server_hostname", "server_username", "server_password",
