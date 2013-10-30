@@ -14,67 +14,71 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#require 'gtk2'
-#require 'virt-p2v/gtk-queue'
+require 'virt-p2v/ui/gtk'
+require 'virt-p2v/gtk-queue'
 
-module VirtP2V
-module UI
-  class NeverMind
-    def method_missing(m, *args, &block)
-      _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
-        self.__id__.to_s : _a}
-      puts "Never mind call '#{m} #{_args}'. ON #{@name ||
-        ("NeverMind:"+self.__id__.to_s)}"
-      self
-    end
-
-    def self.method_missing(m, *args, &block)
-      _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
-        self.__id__.to_s : _a}
-      #puts "Never mind class call '#{m} #{_args}'. ON #{@name || self.inspect}"
-      puts "Never mind call '#{m} #{_args}'. ON #{@name ||
-        ("NeverMind:"+self.__id__.to_s)}"
-      self
-    end
-
-    def eigen
-      class << self
+if Kernel.const_defined?(:NOGUI) && NOGUI == true
+  module VirtP2V
+  module UI
+    class NeverMind
+      def method_missing(m, *args, &block)
+        _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
+          self.__id__.to_s : _a}
+        puts "Never mind call '#{m} #{_args}'. ON #{@name ||
+          ("NeverMind:"+self.__id__.to_s)}"
         self
+      end
+
+      def self.method_missing(m, *args, &block)
+        _args = args.map {|_a| _a.class == NeverMind ? "NeverMind:"+
+          self.__id__.to_s : _a}
+        #puts "Never mind class call '#{m} #{_args}'. ON #{@name || self.inspect}"
+        puts "Never mind call '#{m} #{_args}'. ON #{@name ||
+          ("NeverMind:"+self.__id__.to_s)}"
+        self
+      end
+
+      def eigen
+        class << self
+          self
+        end
+      end
+
+      def initialize(main = nil, name=nil, *args)
+        @name = name
+        @main = main
+        #puts "Hi, I'm #{@name || self.inspect}"
+      end
+    end
+  end
+  end
+
+  module Gtk
+    Builder = VirtP2V::UI::NeverMind
+    STATE_NORMAL = 0
+    SELECTION_SINGLE = 1
+    TreeRowReference = VirtP2V::UI::NeverMind
+
+    def Gtk.timeout_add(timeout, &block)
+      p "Gtk.timeout_add"
+      while true
+        sleep(timeout/1000.0)
+  #      p "trying to call block #{block.inspect}"
+        block.call
       end
     end
 
-    def initialize(main = nil, name=nil, *args)
-      @name = name
-      @main = main
-      puts "Hi, I'm #{@name || self.inspect}"
-    end
-  end
-end
-end
-
-module Gtk
-  Builder = VirtP2V::UI::NeverMind
-  STATE_NORMAL = 0
-  SELECTION_SINGLE = 1
-  TreeRowReference = VirtP2V::UI::NeverMind
-
-  def Gtk.timeout_add(timeout, &block)
-    while true
-      sleep(timeout/1000.0)
-      block.call
+    def Gtk.main_quit
+      exit(0)
     end
   end
 
-  def Gtk.main_quit
-    exit(0)
+  module Gdk
+    Color = VirtP2V::UI::NeverMind
+    Cursor = VirtP2V::UI::NeverMind
+    Cursor::Type = VirtP2V::UI::NeverMind
+    Cursor::Type::X_CURSOR = VirtP2V::UI::NeverMind
   end
-end
-
-module Gdk
-  Color = VirtP2V::UI::NeverMind
-  Cursor = VirtP2V::UI::NeverMind
-  Cursor::Type = VirtP2V::UI::NeverMind
-  Cursor::Type::X_CURSOR = VirtP2V::UI::NeverMind
 end
 
 module VirtP2V
