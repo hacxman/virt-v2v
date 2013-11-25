@@ -198,6 +198,22 @@ class NewMain < Main
 #        p nejm
       end
       n
+    elsif name == 'convert_status'
+      n = NeverMind.new self, name
+      n.eigen.send(:define_method, :text) do
+        @text || ""
+      end
+      n.eigen.send(:define_method, :"text=") do |str|
+        @text = str
+        puts "conversion status changed to: '#{str}'"
+        STDOUT.flush
+        if str =~ /failure|error/i
+          #puts "Error connecting: '#{str}'"
+          puts "Giving up."
+          exit(4)
+        end
+      end
+      n
     elsif name == 'connect_error'
       n = NeverMind.new self, name
       n.eigen.send(:define_method, :text) do
