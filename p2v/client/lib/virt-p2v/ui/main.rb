@@ -395,7 +395,6 @@ class NewMain < Main
 
   def register_handler(signal, handler)
     super(signal, handler)
-    puts "#{handler} for #{signal} action registered"
   end
 
   def initialize dry=nil
