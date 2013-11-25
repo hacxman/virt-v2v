@@ -18,7 +18,8 @@
 
 # Let's check if we should run headless
 NOGUI = open('/proc/cmdline') do |f|
-  f.read =~ /p2v_nogui/
+  val = f.read.scan(/p2v_nogui=([a-zA-Z0-9_=-]*)/)
+  val.first && val.first.first =~ /true/i
 end || ARGV.include?('-nogui') ? true : false
 
 require 'virt-p2v/ui/main'
