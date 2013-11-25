@@ -16,7 +16,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'gtk2'
+require 'gtk2' unless ARGV.include?('-nogui')
 require 'fileutils'
 
 TRY_AGAIN   = 0
@@ -84,16 +84,7 @@ MSG
     return option
 end
 
-loop {
-    system('/bin/sh', '-c', "exec /usr/bin/virt-p2v > #{LOG} 2>&1")
-    status = $?
-    break if status.success?
-
-    open(LOG) do |log|
-      o = choose log.read
-    end
-    break if o == POWER_OFF
-    next if o == TRY_AGAIN
+def debug_shell
     system('/usr/bin/openvt', '-sw', '--', '/bin/sh', '-c', <<DEBUG)
 clear
 echo Output was written to #{LOG}
@@ -102,4 +93,22 @@ echo Exit this shell to run virt-p2v again.
 bash -l
 clear
 DEBUG
+end
+
+loop {
+    system('/bin/sh', '-c', "exec /usr/bin/virt-p2v 2>&1 | tee -a #{LOG} ; ( exit ${PIPESTATUS[0]} )")
+    status = $?
+    break if status.success?
+
+    if ARGV.include?('-nogui')
+      FileUtils.remove_file('/tmp/virt-p2v-launcher')
+      break
+    end
+
+    open(LOG) do |log|
+      o = choose log.read
+    end
+    break if o == POWER_OFF
+    next if o == TRY_AGAIN
+    debug_shell
 }
