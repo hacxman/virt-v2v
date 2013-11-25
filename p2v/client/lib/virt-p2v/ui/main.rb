@@ -431,6 +431,8 @@ class NewMain < Main
   end
 
   def active_page=(name)
+    puts "#{name}"
+    STDOUT.flush
     super(name)
     if name == 'conversion_win'
       fill_and_click_convert
