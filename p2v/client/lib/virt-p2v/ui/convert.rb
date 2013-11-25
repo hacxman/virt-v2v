@@ -248,6 +248,8 @@ module VirtP2V::UI::Convert
             },
             # progress
             lambda { |dev, progress|
+                puts "dev #{dev.to_s} progress #{progress.to_s}"
+                STDOUT.flush
                 @fixeds.each { |model, path, iter|
                     next unless iter[CONVERT_FIXED_DEVICE] == dev
 
