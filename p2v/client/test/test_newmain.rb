@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+NOGUI = true
 require 'virt-p2v/ui/main'
 
 WD = File.expand_path File.dirname(__FILE__)
