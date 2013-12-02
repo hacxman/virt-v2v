@@ -584,6 +584,13 @@ sub use_profile
         my ($allocation) = $storage->getAttributeNode('allocation');
         $opts{allocation} = $allocation->getValue() if defined($allocation);
     }
+
+    my ($uri) = $profile->findnodes('uri/text()');
+    $self->{uri} = 'qemu:///system/';
+    if (defined($uri)) {
+        $self->{uri} = $uri->getData();
+    }
+
     v2vdie __x('Profile {name} doesn\'t specify output storage.', name => $name)
         unless defined($self->{output_storage});
 
@@ -680,6 +687,19 @@ sub list_profiles
 
     return map { $_->getValue() }
            map { $_->findnodes('/virt-v2v/profile/@name') } @{$self->{doms}};
+}
+
+=item get_uri
+
+Return a list of defined profile names
+
+=cut
+
+sub get_uri
+{
+    my $self = shift;
+
+    return $self->{uri}
 }
 
 =back
