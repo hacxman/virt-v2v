@@ -327,7 +327,7 @@ sub set_profile
     my $method = $config->get_method();
     if ($method eq 'libvirt') {
         $target = new Sys::VirtConvert::Connection::LibVirtTarget
-            ('qemu:///system', $storage);
+            ($config->get_uri(), $storage);
     } elsif ($method eq 'rhev') {
         $target = new Sys::VirtConvert::Connection::RHEVTarget($storage);
     } else {
