@@ -21,9 +21,14 @@ again=$(mktemp)
 
 # Launch a getty on tty2 to allow debugging while the program runs
 /usr/bin/setsid mingetty --autologin root /dev/tty2 &
+/usr/bin/chvt 1
 
 while [ -f "$again" ]; do
-    /usr/bin/xinit /usr/bin/virt-p2v-launcher > $Xlog 2>&1
+    if [[ $(cat /proc/cmdline) =~ "p2v_nogui=true" ]] ; then
+      /usr/bin/openvt -c 1 /usr/bin/virt-p2v-launcher 2>&1 | tee -a $Xlog
+    else
+      /usr/bin/xinit /usr/bin/virt-p2v-launcher > $Xlog 2>&1
+    fi
 
     # virt-p2v-launcher will have touched this file if it ran
     if [ -f /tmp/virt-p2v-launcher ]; then
