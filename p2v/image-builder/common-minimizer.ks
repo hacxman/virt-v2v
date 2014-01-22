@@ -24,7 +24,6 @@ droprpm setools-libs
 
 droprpm gamin
 droprpm pm-utils
-droprpm kbd
 droprpm usermode
 droprpm vbetool
 droprpm ConsoleKit
@@ -165,6 +164,8 @@ drop /usr/etc
 drop /usr/games
 drop /usr/include
 drop /usr/local
+keep /usr/local/lib64/ruby/site_ruby/rblibssh2.so
+keep /usr/local/lib/ruby/site_ruby/rblibssh2.so
 drop /usr/sbin/dell*
 keep /usr/sbin/build-locale-archive
 drop /usr/sbin/glibc_post_upgrade.*
