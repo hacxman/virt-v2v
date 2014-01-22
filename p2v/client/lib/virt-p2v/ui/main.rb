@@ -58,7 +58,6 @@ class Main
         raise "Attempt to activate non-existent page #{name}" \
             unless @pages.has_key?(name)
 
-        p "trying to activate page #{name}"
         page = @pages[name]
 
         @page_vbox = self.get_object('page_vbox') unless defined? @page_vbox
@@ -166,9 +165,9 @@ class NewMain < Main
     # register ourselves as listener on activated connection
     # as VirtP2V::UI:Netowork does
     VirtP2V::NetworkDevice.add_listener( lambda { |dev|
-      p dev
+      puts "interface #{dev.name} #{dev.mac}: #{dev.state}"
       if dev.connected && dev.activated then
-        p "we should now continue"
+        puts "connection ready, connecting to p2v server"
         fill_and_click_connect
       end
     })
@@ -265,7 +264,7 @@ class NewMain < Main
   end
 
   def active_page=(name)
-    puts "#{name}"
+    puts "setting active page to #{name}"
     STDOUT.flush
     super(name)
     if name == 'conversion_win'
