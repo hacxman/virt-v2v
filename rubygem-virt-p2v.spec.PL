@@ -89,7 +89,12 @@ BuildRequires:  ruby-devel
 # rblibssh2 dependencies
 BuildRequires:  libssh2-devel
 
-Requires:   ruby(abi) = %{rubyabi}
+%if %{?fedora:0%{fedora} >= 17}%{?rhel:0%{rhel} >= 7}
+Requires:   ruby(release) >= %{rubyabi}
+%else
+Requires:   ruby(abi) >= %{rubyabi}
+%endif
+
 Requires:   rubygems
 Requires:   rubygem(gtk2)
 Requires:   ruby(dbus)
