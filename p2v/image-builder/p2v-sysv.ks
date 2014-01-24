@@ -25,7 +25,9 @@ again=$(mktemp)
 
 while [ -f "$again" ]; do
     if [[ $(cat /proc/cmdline) =~ "p2v_nogui=true" ]] ; then
-      /usr/bin/openvt -c 1 /usr/bin/virt-p2v-launcher 2>&1 | tee -a $Xlog
+      /usr/bin/openvt -c 1 -f -- bash -c "
+/usr/bin/virt-p2v-launcher -nogui 2>&1 | tee -a $Xlog
+"
     else
       /usr/bin/xinit /usr/bin/virt-p2v-launcher > $Xlog 2>&1
     fi
@@ -41,7 +43,8 @@ echo virt-p2v-launcher failed
 select c in \
     \"Try again\" \
     \"Debug\" \
-    \"Power off\"
+    \"Power off\" \
+    \"View log\"
 do
     if [ \"\$c\" == Debug ]; then
         echo Output was written to $Xlog
@@ -50,6 +53,9 @@ do
         bash -l
     elif [ \"\$c\" == \"Power off\" ]; then
         rm $again
+    elif [ \"\$c\" == \"View log\" ]; then
+        TERM=xterm less /tmp/X.log
+        continue
     fi
     break
 done
