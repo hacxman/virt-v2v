@@ -1,5 +1,6 @@
 # -*- rpm-spec -*-
 # Copyright (C) 2006 Daniel Berrange <dan@berrange.com>
+# Copyright (C) 2014 Red Hat Inc. <mzatko@redhat.com>
 #
 
 use strict;
