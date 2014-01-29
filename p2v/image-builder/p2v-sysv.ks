@@ -39,6 +39,8 @@ while [ -f "$again" ]; do
     fi
 
     /usr/bin/openvt -sw -- /bin/bash -c "
+cat $Xlog
+echo
 echo virt-p2v-launcher failed
 select c in \
     \"Try again\" \
