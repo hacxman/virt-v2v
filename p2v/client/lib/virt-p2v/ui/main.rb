@@ -191,7 +191,8 @@ class NewMain < Main
   end
 
   def is_param_optional?(name)
-      ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns'].include?(name)
+      ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
+       'disks'].include?(name)
   end
 
   def validate_params(params)
@@ -207,6 +208,12 @@ class NewMain < Main
     else
       params['ip_manual'] = false
     end
+
+    if params['disks'] && params['disks'].split(',') == [] then
+      puts "Explicit p2v_disks can't be empty. Implicit p2v_disks selects all disks."
+      return false
+    end
+
     true
   end
 
@@ -259,9 +266,11 @@ class NewMain < Main
   def fill_and_click_convert
       fill_widgets_from_params(['convert_name'])
 
-      get_object('convert_fixed_list')._uncheck_all
-      @cmd_params['disks'].split(',').each do |_dev|
-        get_object('convert_fixed_list')._set_checked(_dev, true)
+      if @cmd_params['disks'] then
+        get_object('convert_fixed_list')._uncheck_all
+        @cmd_params['disks'].split(',').each do |_dev|
+          get_object('convert_fixed_list')._set_checked(_dev, true)
+        end
       end
 
       call_actions_by_name(['convert_name_changed', 'convert_cpus_changed',
