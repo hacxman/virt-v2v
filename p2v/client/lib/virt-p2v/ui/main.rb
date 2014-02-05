@@ -187,7 +187,7 @@ class NewMain < Main
   def expected_param_keys
       ['ip_manual', 'ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
             'server_hostname', 'server_username', 'server_password',
-            'convert_name']
+            'convert_name', 'disks']
   end
 
   def is_param_optional?(name)
@@ -258,6 +258,12 @@ class NewMain < Main
 
   def fill_and_click_convert
       fill_widgets_from_params(['convert_name'])
+
+      get_object('convert_fixed_list')._uncheck_all
+      @cmd_params['disks'].split(',').each do |_dev|
+        get_object('convert_fixed_list')._set_checked(_dev, true)
+      end
+
       call_actions_by_name(['convert_name_changed', 'convert_cpus_changed',
                            'convert_memory_changed', 'convert_profile_changed',
                            'convert_button_clicked'])

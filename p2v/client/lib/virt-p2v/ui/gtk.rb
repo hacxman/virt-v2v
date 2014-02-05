@@ -99,6 +99,20 @@ if Kernel.const_defined?(:NOGUI) && NOGUI == true
         @items.clear
       end
 
+      def _set_checked(dev_name, check)
+        @items.each do |item|
+          if item[VirtP2V::UI::Convert::CONVERT_FIXED_DEVICE] == dev_name then
+            item[VirtP2V::UI::Convert::CONVERT_FIXED_CONVERT] = check
+          end
+        end
+      end
+
+      def _uncheck_all
+        @items.each do |item|
+          item[VirtP2V::UI::Convert::CONVERT_FIXED_CONVERT] = false
+        end
+      end
+
       def each(&block)
         @items.each do |item|
           # block accepts three params:
@@ -107,6 +121,10 @@ if Kernel.const_defined?(:NOGUI) && NOGUI == true
           # we'll fill only item as iter
           block.call(nil, nil, item)
         end
+      end
+
+      def get_iter(path)
+        self
       end
     end
 
@@ -155,7 +173,7 @@ if Kernel.const_defined?(:NOGUI) && NOGUI == true
         @text = str
         puts "conversion status changed to: '#{str}'"
         STDOUT.flush
-        if str =~ /failure|error/i
+        if str =~ /failure|error|no\ root/i
           puts "Giving up."
           exit(4)
         end
