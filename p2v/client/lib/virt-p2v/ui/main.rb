@@ -187,12 +187,12 @@ class NewMain < Main
   def expected_param_keys
       ['ip_manual', 'ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
             'server_hostname', 'server_username', 'server_password',
-            'convert_name', 'disks']
+            'convert_name', 'disks', 'nics', 'rems']
   end
 
   def is_param_optional?(name)
       ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
-       'disks'].include?(name)
+       'disks', 'nics', 'rems'].include?(name)
   end
 
   def validate_params(params)
@@ -211,6 +211,11 @@ class NewMain < Main
 
     if params['disks'] && params['disks'].split(',') == [] then
       puts "Explicit p2v_disks can't be empty. Implicit p2v_disks selects all disks."
+      return false
+    end
+
+    if params['nics'] && params['nics'].split(',') == [] then
+      puts "Explicit p2v_nics can't be empty. Implicit p2v_nics selects all NICs."
       return false
     end
 
@@ -263,19 +268,26 @@ class NewMain < Main
           "connect_button_clicked"])
   end
 
+  def split_and_set_checked(what, where)
+    widget = get_object(where.to_s) # "convert_#{where}_list")
+    widget._uncheck_all
+    @cmd_params[what].split(',').each do |_dev|
+      widget._set_checked(_dev, true)
+    end
+  end
+
   def fill_and_click_convert
-      fill_widgets_from_params(['convert_name'])
+    fill_widgets_from_params(['convert_name'])
 
-      if @cmd_params['disks'] then
-        get_object('convert_fixed_list')._uncheck_all
-        @cmd_params['disks'].split(',').each do |_dev|
-          get_object('convert_fixed_list')._set_checked(_dev, true)
-        end
-      end
+    {'disks' => 'convert_fixed_list',
+     'nics' => 'convert_network_list',
+     'rems' => 'convert_removable_list'}.each do |p,w|
+       split_and_set_checked(p,w) if @cmd_params[p]
+     end
 
-      call_actions_by_name(['convert_name_changed', 'convert_cpus_changed',
-                           'convert_memory_changed', 'convert_profile_changed',
-                           'convert_button_clicked'])
+    call_actions_by_name(['convert_name_changed', 'convert_cpus_changed',
+                          'convert_memory_changed', 'convert_profile_changed',
+                          'convert_button_clicked'])
   end
 
   def active_page=(name)
