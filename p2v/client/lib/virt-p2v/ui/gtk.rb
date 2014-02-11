@@ -212,7 +212,7 @@ on '#{@name}'. Available items are: #{@items.join(', ')}.")
               "convert_name", "convert_cpus", "convert_memory",
               "ip_manual", "ip_address", "ip_prefix", "ip_gateway",
               "ip_dns", "server_hostname", "server_username",
-              "server_password"].flat_map do |_l|
+              "server_password", "convert_debug"].flat_map do |_l|
                 [_l, SomeTextFieldW]
               end) ]
             ).merge({

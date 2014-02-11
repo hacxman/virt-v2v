@@ -187,12 +187,14 @@ class NewMain < Main
   def expected_param_keys
       ['ip_manual', 'ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
             'server_hostname', 'server_username', 'server_password',
-            'convert_name', 'disks', 'nics', 'rems', 'profile']
+            'convert_name', 'disks', 'nics', 'rems', 'profile',
+            'convert_memory', 'convert_cpus', 'convert_debug']
   end
 
   def is_param_optional?(name)
       ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
-       'disks', 'nics', 'rems', 'profile'].include?(name)
+       'disks', 'nics', 'rems', 'profile', 'convert_memory', 'convert_cpus',
+       'convert_debug'].include?(name)
   end
 
   def validate_params(params)
@@ -277,7 +279,13 @@ class NewMain < Main
   end
 
   def fill_and_click_convert
-    fill_widgets_from_params(['convert_name'])
+    fill_widgets_from_params(['convert_name', 'convert_cpus',
+                              'convert_memory', 'convert_debug'])
+
+    if get_object('convert_debug').text =~ /true|1/ then
+      call_actions_by_name(['convert_debug_toggled'])
+      puts "Conversion debug enabled."
+    end
 
     get_object('convert_profile_list').
       _set_selected_name(@cmd_params['profile']) if @cmd_params['profile']
