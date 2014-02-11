@@ -1,0 +1,35 @@
+P2V can run "headless" without any need to manually fill in GTK2 dialogues.
+
+To specify parameters otherwise entered via GUI you need to pass them through
+kernel command line. You could achieve this for example with PXE boot.
+
+Possible paramters are [M - mandatory, O - optional]:
+M p2v_ip_manual=true - use manual IP address, specified via option below
+O p2v_ip_address=SOME_IP_ADDRESS
+O p2v_ip_prefix=NETMASK_BITS
+O p2v_ip_gateway=GW_IP
+O p2v_ip_dns=DNS_IP
+M p2v_server_hostname=HOSTNAME - Convert server hostname
+M p2v_server_username=USER - Connect/run virt-p2v-server as this user
+M p2v_server_password=PWD - Password for above
+M p2v_convert_name=MACHINE_NAME - Newly created VM will have this name
+O p2v_disks=vda,vdc,... - Select which disks to transfer. When p2v_disks is not
+                          present all disks are selected.
+O p2v_nics=eth0,p0p2,... - Same as above but for network adapters
+O p2v_rems=sr0,fd1,...   - Same as above but for removable devices
+O p2v_profile=libvirt    - One of the profiles specified in /etc/virt-v2v.conf
+O p2v_convert_memory=1024 - How much memory should new VM have. If option is
+                            not present, new VM will have same amount.
+O p2v_convert_cpus=3      - Same as above but for CPUs
+O p2v_convert_debug=true - Can be true or 1, when set, debug option is enabled
+                           in virt-p2v-server
+
+P2V needs operator's attendance at console in case of some sort of failure.
+Operator is then provided with output from P2V and four options:
+1 - Try again - re-runs P2V, useful when some missing resource is available again
+2 - Debug - runs shell
+3 - Power off
+4 - View log - shows output from P2V in less
+
+Example kernel arguments from virt-manager:
+initrd=initrd0.img root=live:CDLABEL=Virt-P2V rootfstype=auto ro rd.live.image quiet  rd.luks=0 rd.md=0 rd.dm=0 selinux=0 p2v_nogui=true p2v_ip_manual=false p2v_server_hostname=192.168.122.1 p2v_server_username=root p2v_server_password=SUCHPASSWORD p2v_convert_name=newone p2v_disks=vda,vdb p2v_nics=eth0,ens9 p2v_rems=sr1,sr2,fd0 p2v_profile=libvirt p2v_convert_memory=512 p2v_convert_cpus=2 p2v_convert_debug=true
