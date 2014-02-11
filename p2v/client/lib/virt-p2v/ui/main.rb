@@ -187,12 +187,12 @@ class NewMain < Main
   def expected_param_keys
       ['ip_manual', 'ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
             'server_hostname', 'server_username', 'server_password',
-            'convert_name', 'disks', 'nics', 'rems']
+            'convert_name', 'disks', 'nics', 'rems', 'profile']
   end
 
   def is_param_optional?(name)
       ['ip_address', 'ip_prefix', 'ip_gateway', 'ip_dns',
-       'disks', 'nics', 'rems'].include?(name)
+       'disks', 'nics', 'rems', 'profile'].include?(name)
   end
 
   def validate_params(params)
@@ -278,6 +278,9 @@ class NewMain < Main
 
   def fill_and_click_convert
     fill_widgets_from_params(['convert_name'])
+
+    get_object('convert_profile_list').
+      _set_selected_name(@cmd_params['profile']) if @cmd_params['profile']
 
     {'disks' => 'convert_fixed_list',
      'nics' => 'convert_network_list',

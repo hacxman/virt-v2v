@@ -113,6 +113,12 @@ if Kernel.const_defined?(:NOGUI) && NOGUI == true
         end
       end
 
+      def _set_selected_name(name)
+        @idx = @items.index([name]) ||
+          (@main.get_object('connect_error').text="Cannot select '#{name}' \
+on '#{@name}'. Available items are: #{@items.join(', ')}.")
+      end
+
       def each(&block)
         @items.each do |item|
           # block accepts three params:
@@ -159,6 +165,7 @@ if Kernel.const_defined?(:NOGUI) && NOGUI == true
         unless str == ''
           puts "Error connecting: '#{str}'"
           puts "Giving up."
+          STDOUT.flush
           exit(3)
         end
       end
